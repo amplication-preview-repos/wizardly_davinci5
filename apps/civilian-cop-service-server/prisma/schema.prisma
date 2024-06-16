@@ -1,0 +1,64 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Civilian {
+  createdAt       DateTime         @default(now())
+  displayName     String?
+  distressSignals DistressSignal[]
+  email           String?
+  id              String           @id @default(cuid())
+  phone           String?
+  ratings         Rating[]
+  updatedAt       DateTime         @updatedAt
+  userId          String?
+}
+
+model DistressSignal {
+  civilian   Civilian?                 @relation(fields: [civilianId], references: [id])
+  civilianId String?
+  cop        Cop?                      @relation(fields: [copId], references: [id])
+  copId      String?
+  createdAt  DateTime                  @default(now())
+  id         String                    @id @default(cuid())
+  location   Json?
+  message    String?
+  status     EnumDistressSignalStatus?
+  updatedAt  DateTime                  @updatedAt
+}
+
+model Rating {
+  civilian    Civilian? @relation(fields: [civilianId], references: [id])
+  civilianId  String?
+  comment     String?
+  cop         Cop?      @relation(fields: [copId], references: [id])
+  copId       String?
+  createdAt   DateTime  @default(now())
+  id          String    @id @default(cuid())
+  ratingValue Int?
+  updatedAt   DateTime  @updatedAt
+}
+
+model Cop {
+  createdAt       DateTime         @default(now())
+  displayName     String?
+  distressSignals DistressSignal[]
+  earnedRatings   Int?
+  email           String?
+  id              String           @id @default(cuid())
+  location        Json?
+  phone           String?
+  ratings         Rating[]
+  totalRatings    Int?
+  updatedAt       DateTime         @updatedAt
+  userId          String?
+}
+
+enum EnumDistressSignalStatus {
+  Option1
+}
